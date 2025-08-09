@@ -22,17 +22,29 @@ export class AuthService {
 
             return user;
         } catch (error) {
-        if (error.code === 'P2002') {
-          throw new ForbiddenException('Credentials taken');
-        }
-      
-      throw error;
+            if (error.code === 'P2002') {
+                throw new ForbiddenException('Credentials taken');
+            }
+            throw error;
         }
 
     }
 
 
-    signin() {
-        return 'i am sign in';
+    async signin(dto: AuthDto) {
+        //find user
+        const user = await this.prisma.user.findUnique({
+            where: {
+                email: dto.email as string,
+            }
+        })
+        if (!user) throw new ForbiddenException("invalid credentails");
+
+        const pwdMatches = await argon.verify(user.hash, dto.password as string)
+        if (!pwdMatches) throw new ForbiddenException("invalid passoword");
+        
+        const { hash, ...userWithoutHash } = user;
+        return userWithoutHash;
+
     }
 }
