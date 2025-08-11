@@ -12,5 +12,16 @@ services:
     networks:
       - nabin
 
+  test-db:
+    image: postgres:13
+    ports:
+      - "5430:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Nt@post
+      POSTGRES_DB: nest
+    networks:
+      - nabin
+
 networks:
   nabin:
