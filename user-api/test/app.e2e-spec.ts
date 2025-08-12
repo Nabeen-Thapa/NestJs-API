@@ -20,13 +20,15 @@ describe('App e2e', () => {
       whitelist: true
     }))
     await app.init();
-    await app.listen(3333)
     prisma = app.get(PrismaService);
     await prisma.cleanDb();
-    pactum.request.setBaseUrl('http://localhost:3333');
+     await app.listen(3333)
+    pactum.request.setBaseUrl('http://localhost:3333'); 
+     
+
   });
-  afterAll(() => {
-    app.close();
+  afterAll(async() => {
+   await app.close();
   })
 
   describe('auth', () => {
@@ -66,8 +68,8 @@ describe('App e2e', () => {
         return pactum.spec().post('/auth/signin',).withBody({
           email: dto.email
         }).expectStatus(400);
-        
       })
+
       it("shhould throw if no body", () => {
         return pactum.spec().post('/auth/signin',).expectStatus(400);
         
@@ -77,13 +79,24 @@ describe('App e2e', () => {
           .spec()
           .post('/auth/signin')
           .withBody(dto)
-          .expectStatus(201);
+          .expectStatus(201)
+          .stores('usersAt', 'access_token');
       });
     });
 
   });
   describe('users', () => {
-    describe('Get Me', () => { });
+    describe('Get Me', () => {
+      //  it("should get current user", () => {
+      //   return pactum
+      //     .spec()
+      //     .get('/user/me')  
+      //     .withHeaders({
+      //       Authorization: `Bearer $S{usersAt}`
+      //     })
+      //     .expectStatus(201);
+      // });
+     });
     describe('Edit user', () => { });
 
   });
