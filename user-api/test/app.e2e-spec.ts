@@ -7,6 +7,7 @@ import { PrismaService } from "../src/prisma/prisma.service";
 import * as pactum from "pactum";
 import { AuthDto } from "../src/auth/dto";
 import passport from "passport";
+import { EditUserDto } from "src/users/dto";
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -22,13 +23,13 @@ describe('App e2e', () => {
     await app.init();
     prisma = app.get(PrismaService);
     await prisma.cleanDb();
-     await app.listen(3333)
-    pactum.request.setBaseUrl('http://localhost:3333'); 
-     
+    await app.listen(3333)
+    pactum.request.setBaseUrl('http://localhost:3333');
+
 
   });
-  afterAll(async() => {
-   await app.close();
+  afterAll(async () => {
+    await app.close();
   })
 
   describe('auth', () => {
@@ -41,17 +42,17 @@ describe('App e2e', () => {
         return pactum.spec().post('/auth/signup',).withBody({
           password: dto.password
         }).expectStatus(400);
-        
+
       })
       it("shhould throw passowrd empty", () => {
         return pactum.spec().post('/auth/signup',).withBody({
           email: dto.email
         }).expectStatus(400);
-        
+
       })
       it("shhould throw if no body", () => {
         return pactum.spec().post('/auth/signup',).expectStatus(400);
-        
+
       })
       it("should signup", () => {
         return pactum.spec().post('/auth/signup',).withBody(dto).expectStatus(201);
@@ -62,7 +63,7 @@ describe('App e2e', () => {
         return pactum.spec().post('/auth/signin',).withBody({
           password: dto.password
         }).expectStatus(400);
-        
+
       })
       it("shhould throw passowrd empty", () => {
         return pactum.spec().post('/auth/signin',).withBody({
@@ -72,7 +73,7 @@ describe('App e2e', () => {
 
       it("shhould throw if no body", () => {
         return pactum.spec().post('/auth/signin',).expectStatus(400);
-        
+
       })
       it("should signin", () => {
         return pactum
@@ -96,8 +97,27 @@ describe('App e2e', () => {
       //     })
       //     .expectStatus(201);
       // });
-     });
-    describe('Edit user', () => { });
+    });
+    describe('Edit user', () => {
+      it("should edit user", () => {
+        const dto: EditUserDto = {
+          firstName: "add user",
+          email: "add@userInfo.com"
+        };
+        return pactum
+          .spec()
+          .patch('/users')
+          .withHeaders({
+            Authorization: 'Bearer $S{usersAt}' // <-- send the stored token
+          })
+          .withBody(dto)
+          .expectStatus(200)
+          .expectBodyContains(dto.firstName)
+          .expectBodyContains(dto.email);
+          
+      });
+    });
+
 
   });
   describe('bookmark', () => {
