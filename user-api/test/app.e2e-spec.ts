@@ -8,6 +8,7 @@ import * as pactum from "pactum";
 import { AuthDto } from "../src/auth/dto";
 import passport from "passport";
 import { EditUserDto } from "src/users/dto";
+import { CreateBookmarksDto } from "src/bookmark/dto";
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -121,8 +122,37 @@ describe('App e2e', () => {
 
   });
   describe('bookmark', () => {
-    describe('create bookmarks', () => { });
-    describe('Get bookmarks', () => { });
+    describe('create bookmarks', () => { 
+      const dto :CreateBookmarksDto={
+        title:"first bookmark",
+        description:"this the first",
+        link: "https://www.youtube.com/watch?v=GHTA143_b-s&t=75s"
+      };
+      it("shooudl create bookmark",()=>{
+        return pactum
+          .spec()
+          .post('/bookmarks')
+          .withHeaders({
+            Authorization: 'Bearer $S{usersAt}' // <-- send the stored token
+          })
+          .withBody(dto)
+          .expectStatus(201)
+          .inspect();
+      })
+        });
+    describe('Get bookmarks', () => {
+      it("shooudl get empty bookmark",()=>{
+        return pactum
+          .spec()
+          .get('/bookmarks')
+          .withHeaders({
+            Authorization: 'Bearer $S{usersAt}',
+          })
+          .expectStatus(201)
+          .inspect()
+          .expectBody([])
+      })
+     });
     describe('Get bookmarks by id', () => { });
     describe('Edit bookmarks', () => { }); describe('Delete bookmarks', () => { });
   });
