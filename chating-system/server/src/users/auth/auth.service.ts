@@ -7,12 +7,14 @@ import { AppError } from 'src/common/utils/response.utils';
 import { loginDto } from '../dto/login.dto';
 import { compare, hash } from "bcrypt";
 import { TokenPayload } from 'src/types/user.types';
-import { generateAccessToken } from 'src/common/config/jwt.config';
+import { generateAccessToken, generateRefreshToken } from 'src/common/config/jwt.config';
+import { Session } from '../models/user-session.model';
 
 @Injectable()
 export class AuthService {
-    constructor(@InjectRepository(Users)
-    private readonly userRepo: Repository<Users>,) { }
+    constructor(
+        @InjectRepository(Users) private readonly userRepo: Repository<Users>,
+        @InjectRepository(Session) private sessionRepo: Repository<Session>,) { }
 
     async userRegister(userData: CreateUser) {
         try {
@@ -53,6 +55,13 @@ export class AuthService {
              }
 
             const accessToken = await generateAccessToken(payload);
+            const refreshToken = await generateRefreshToken(payload);
+
+            const newSession = await this.sessionRepo.create({
+                userId: user.id,
+                AccessToken: accessToken,
+            })
+            await this.sessionRepo.save(newSession);
             const {name, email} = user;
             return{
                 accessToken,
