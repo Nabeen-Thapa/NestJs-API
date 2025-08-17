@@ -14,7 +14,7 @@ export class CreateUser {
     @IsNotEmpty()
     password:string
 
-    @IsNumber()
-    phone: number
+    @IsString()
+    phone: string
 
 }

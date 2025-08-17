@@ -2,6 +2,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUser } from '../dto/create-user.dto';
 import { sendError, sendSuccess } from 'src/common/utils/response.utils';
+import { loginDto } from '../dto/login.dto';
 
 @Controller('user/auth')
 export class AuthController {
@@ -19,7 +20,14 @@ export class AuthController {
         }
     }
     @Post("login")
-    async userLogin(){
-
+    async userLogin(@Body() loginData: loginDto){
+        console.log("login data:" ,loginData)
+        try {
+            const login =  await this.authService.userLogin(loginData);
+            return sendSuccess("login success", login)
+        } catch (error) {
+            console.log("user regsiter controller error:", error.message);
+            return sendError("register fail:", error);
+        }
     }
 }

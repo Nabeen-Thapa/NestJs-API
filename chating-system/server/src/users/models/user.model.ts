@@ -15,5 +15,5 @@ export class Users {
     password: string
 
     @Column({ unique: true })
-    phone: number
+    phone: string
 }

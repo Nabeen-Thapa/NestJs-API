@@ -4,6 +4,10 @@ import { CreateUser } from '../dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AppError } from 'src/common/utils/response.utils';
+import { loginDto } from '../dto/login.dto';
+import { compare, hash } from "bcrypt";
+import { TokenPayload } from 'src/types/user.types';
+import { generateAccessToken } from 'src/common/config/jwt.config';
 
 @Injectable()
 export class AuthService {
@@ -16,10 +20,11 @@ export class AuthService {
             const isExist = await this.userRepo.findOne({ where: { email: userData.email } });
             if (isExist) throw new AppError('User already exists', 400);
 
+            const hashedPwd = await hash(userData.password, 10)
             const user = await this.userRepo.create({
                 name: userData.name,
                 email: userData.email,
-                password: userData.password,
+                password: hashedPwd,
                 phone: userData.phone
 
             })
@@ -30,7 +35,33 @@ export class AuthService {
         }
     }
 
-    async userLogin() {
+    async userLogin(data:loginDto) {
+        try {
 
+            const user = await this.userRepo.findOne({where:{email: data.email}})
+            if(!user) throw new AppError("you are not registerd yet");
+
+            //const hashedPassword = user ? user.password : "kfghidf@#cfgh1&8"; 
+            const pwdValid = await compare(data.password, user.password) 
+             if(!pwdValid) throw new AppError("your password is not valid");
+
+             const payload: TokenPayload = {
+                userId: user.id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone
+             }
+
+            const accessToken = await generateAccessToken(payload);
+            const {name, email} = user;
+            return{
+                accessToken,
+                user:{ name, email }
+            }
+            
+        } catch (error) {
+             console.log("Login error:", (error as Error).message);
+            throw error;
+        }
     }
 }
