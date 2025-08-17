@@ -65,6 +65,7 @@ export class AuthService {
             const {name, email} = user;
             return{
                 accessToken,
+                refreshToken,
                 user:{ name, email }
             }
             
