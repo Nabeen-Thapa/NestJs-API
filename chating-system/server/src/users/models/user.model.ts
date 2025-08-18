@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { ChatMessage } from "src/chats/models/chattings.model";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Users {
@@ -16,4 +17,13 @@ export class Users {
 
     @Column({ unique: true })
     phone: string
+
+    @OneToMany(() => ChatMessage, (message) => message.sender)
+    sentMessages: ChatMessage[];
+
+    @OneToMany(() => ChatMessage, (message) => message.receiver)
+    receivedMessages: ChatMessage[];
+
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    createdAt!: Date;
 }

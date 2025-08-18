@@ -5,6 +5,7 @@ import { AuthModule } from './users/auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from './users/models/user.model';
 import { Session } from './users/models/user-session.model';
+import { ChatMessage } from './chats/models/chattings.model';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { Session } from './users/models/user-session.model';
       username:'postgres',
       password:'Nt@post',
       database: process.env.DATABASE || 'ChatingSystem',
-      entities: [Users, Session],
+      entities: [Users, Session, ChatMessage],
       synchronize: true,
       logging: false,
     }),
