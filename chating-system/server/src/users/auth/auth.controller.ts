@@ -8,7 +8,7 @@ import { setAuthCookies } from '../utils/authCookie.utils';
 import { AuthGuard } from '@nestjs/passport';
 import { validateDto } from 'src/common/utils/dtoValidateResponse.utils';
 
-@UseGuards(AuthGuard('jwt'))
+
 @Controller('user/auth')
 export class AuthController {
    constructor(private authService: AuthService){}
