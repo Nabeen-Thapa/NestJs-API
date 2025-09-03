@@ -21,7 +21,7 @@ export class AuthController {
             return sendSuccess("registered successfully")
         } catch (error) {
             console.log("user regsiter controller error:", error.message);
-            return sendError("register fail:", error.message);
+            return sendError("register fail:", error);
         }
     }
     @Post("login")

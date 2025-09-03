@@ -7,8 +7,8 @@ import { AppExceptionFilter } from './common/utils/errroHandler.utils';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
-app.useGlobalFilters(new AppExceptionFilter());
-   app.useGlobalPipes(
+  app.useGlobalFilters(new AppExceptionFilter());
+  app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // strips properties not in DTO
       forbidNonWhitelisted: true, // throws error if unknown property is sent
